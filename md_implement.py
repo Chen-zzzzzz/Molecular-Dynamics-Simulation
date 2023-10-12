@@ -29,14 +29,6 @@ def import_file(filename):
 
 # @nb.njit
 def init_vel(atom_count,temperature):
-    # Initialize velocities randomly
-    # vel = np.random.randn(atom_count, 3)
-    
-    # # Adjust velocities for zero total momentum
-    # total_momentum = np.sum(vel, axis=0)
-    # correction = total_momentum / atom_count
-    # vel -= correction
-    # return vel
     half_vel = np.random.normal(0,np.sqrt(1.0*temperature),size = (atom_count//2,3))
     vel = np.concatenate([half_vel, - half_vel], axis = 0)
     return vel
@@ -143,20 +135,6 @@ def nearest_image_dist(pos1, pos2, L):
     delta = np.array([pbc_delta(d, L) for d in delta])
     return np.linalg.norm(delta)
 
-
-# def calculate_dist(p, atom, other):
-#     # p = np.array(p)
-#     # if rx > cell_length / 2: rx -= cell_length
-#     # if rx < -cell_length / 2: rx += cell_length
-#     # if ry > cell_length / 2: ry -= cell_length
-#     # if ry < -cell_length / 2: ry += cell_length
-#     # if rz > cell_length / 2: rz -= cell_length
-#     # if rz < -cell_length / 2: rz += cell_length
-#     rx = pbc_delta(p[other, 0] - p[atom, 0], cell_length)
-#     ry = pbc_delta(p[other, 1] - p[atom, 1], cell_length)
-#     rz = pbc_delta(p[other, 2] - p[atom, 2], cell_length)
-#     r = (rx**2 + ry**2 + rz**2)**0.5
-#     return rx, ry, rz, r
 # @nb.njit
 def calculate_dist(p, atom, other):
     # print(p[other])
@@ -228,113 +206,7 @@ def run_md(p, v, f, steps):
         # all_pressures.append(pre)
     return all_positions, all_velocities, all_forces, all_potentials, ke_list, all_temp, all_pre
 
-# def calculate_energies(v):
-#     e_out = []
-#     px_out = []
-#     py_out = []
-#     pz_out = []
-#     for timestep in v_out:
-#         e_sum = 0
-#         px_sum = 0
-#         py_sum = 0
-#         pz_sum = 0
-#         for atom in timestep:
-#             v_x = atom[0]
-#             v_y = atom[1]
-#             v_z = atom[2]
-#             v = (v_x ** 2 + v_y ** 2 + v_z **2) ** 0.5
-#             e_sum += (1 / 2) * mass * (v **2)
-#             px_sum += mass * v_x
-#             py_sum += mass * v_y
-#             pz_sum += mass * v_z
-#         e_out.append(e_sum)
-#         px_out.append(px_sum)
-#         py_out.append(py_sum)
-#         pz_out.append(pz_sum)
-#     return e_out, px_out, py_out, pz_out
 
-# def calculate_potentials(p, cell_length):
-    # total_energy = 0
-    # cutoff = 2.5
-
-    # # Compute the Lennard-Jones potential and its derivative at r_c
-    # u_LJ_rc = 4 * ((1/cutoff**12) - (1/cutoff**6))
-    # f_LJ_rc = 24 * ((2/cutoff**13) - (1/cutoff**7))
-
-    # for atom in range(atom_count):
-    #     for other in range(atom + 1, atom_count):
-    #         rx, ry, rz, r = calculate_dist(p, atom, other)
-
-    #         # Apply periodic boundary conditions
-    #         if rx > cell_length / 2: rx -= cell_length
-    #         if rx < -cell_length / 2: rx += cell_length
-    #         if ry > cell_length / 2: ry -= cell_length
-    #         if ry < -cell_length / 2: ry += cell_length
-    #         if rz > cell_length / 2: rz -= cell_length
-    #         if rz < -cell_length / 2: rz += cell_length
-    #         r = np.sqrt(rx**2 + ry**2 + rz**2)
-
-    #         if r < cutoff:
-    #             # Lennard-Jones potential at r
-    #             u_LJ_r = 4 * ((1/r**12) - (1/r**6))
-
-    #             # Shifted Force potential at r
-    #             u_SF_r = u_LJ_r - (r - cutoff) * f_LJ_rc - u_LJ_rc
-    #             total_energy += u_SF_r
-
-    # return total_energy
-
-# def calculate_potentials(p, cell_length):
-#     p = np.array(p)
-#     cutoff = 2.5
-#     u = []
-#     # Compute the Lennard-Jones potential and its derivative at r_c
-#     u_LJ_rc = 4 * ((1/cutoff**12) - (1/cutoff**6))
-#     f_LJ_rc =  24 * ((2/cutoff**13) - (1/cutoff**7))
-
-#     for t in range(steps):
-#         # exit()
-#         total_energy = 0
-#         for atom in range(atom_count):
-#             for other in range(atom + 1, atom_count):
-                
-#                 rx, ry, rz, r = calculate_dist(p[t], atom, other)
-#                 # print(p.shape)
-
-#                 # Apply periodic boundary conditions
-                
-
-#                 # if rx > cell_length / 2: rx -= cell_length
-#                 # if rx < -cell_length / 2: rx += cell_length
-#                 # if ry > cell_length / 2: ry -= cell_length
-#                 # if ry < -cell_length / 2: ry += cell_length
-#                 # if rz > cell_length / 2: rz -= cell_length
-#                 # if rz < -cell_length / 2: rz += cell_length
-#                 # r = np.sqrt(rx**2 + ry**2 + rz**2)
-
-#                 if r < cutoff:
-#                     # Lennard-Jones potential at r
-#                     u_LJ_r = 4 * ((1/r**12) - (1/r**6))
-
-#                     # Shifted Force potential at r
-#                     u_SF_r = u_LJ_r - (r - cutoff) * -f_LJ_rc - u_LJ_rc
-
-#                     total_energy += u_SF_r
-#             u.append(total_energy)
-#     return u
-    #     for atom in range(atom_count):
-    #         for other in range(atom + 1, atom_count):
-    #             rx, ry, rz, r = calculate_dist(p, atom, other)
-
-    #             if r < cutoff:
-    #                 # Lennard-Jones potential at r
-    #                 u_LJ_r = 4 * ((1/r**12) - (1/r**6))
-
-    #                 # Shifted Force potential at r
-    #                 u_SF_r = u_LJ_r - (r - cutoff) * f_LJ_rc - u_LJ_rc
-    #                 total_energy += u_SF_r
-
-    # return total_energy
 
 
 def calculate_hamiltonian(e, pot):
@@ -354,39 +226,6 @@ def export_file(p):
                     atom_string += ' ' + str(atom[dir])
                 out.write(atom_string)
                 out.write('\n')
-
-# def plot_all(v, p):
-#     #calculate kinetic energy, potential, and hamiltonian
-#     e_out, px_out, py_out, pz_out = calculate_energies(v)
-#     pot_out = calculate_potentials(p, cell_length)
-#     h_out = calculate_hamiltonian(e_out, pot_out)
-#     #write pot_out, e_out, h_out to .txt
-#     np.savetxt('pot_out.txt', pot_out)
-#     np.savetxt('e_out.txt', e_out)
-#     np.savetxt('h_out.txt', h_out)
-
-
-#     #Plot kinetic energy, potential, and hamiltonian
-#     plt.plot(pot_out, label='Potential')
-#     plt.plot(e_out, label='Kinetic Energy')
-#     plt.plot(h_out, label='Hamiltonian')
-#     plt.legend()
-#     plt.xlabel("Timestep (dimensionless)")
-#     plt.ylabel("Energy (dimensionless)")
-#     plt.savefig('energy')
-#     plt.show()
-#     plt.close()
-
-#     #Plot directional momenta 
-#     plt.plot(px_out, label='x-momentum')
-#     plt.plot(py_out, label='y-momentum')
-#     plt.plot(pz_out, label='z-momentum')
-#     plt.legend()
-#     plt.xlabel("Timestep (dimensionless)")
-#     plt.ylabel("Momentum (dimensionless)")
-#     plt.savefig('momentum')
-#     plt.show()
-#     plt.close()
 
 
 
